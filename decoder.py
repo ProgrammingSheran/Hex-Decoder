@@ -1,51 +1,47 @@
 import re
 from codecs import decode
-from os import remove
+from io_hex import read_file, del_file, write_file
 
 class HexDecoder:
+
+    '''
+    >>> h = HexDecoder("blubb.txt", "Bl.txt")
+    >>> [result for result in h.decoding()]
+    [(1, 'Hey how are you?'), (2, 'This is a test!'), (3, 'My Hex-Decoder = True')]
+    '''
 
     def __init__(self, in_file, out_file, verbose=False):
         self.in_file = in_file
         self.out_file = out_file
         self.verbose = verbose
-        self.decode()
 
-    def readFile(self):
+    def decoding(self):
+        '''
+        Main decoding function
+        :returns: Decoded hex from input as an iterable object
+        '''
+
+        df = del_file(self.out_file)
+        if not df:
+            print(df)
         try:
-            stdin_stream = open(self.in_file, "r", encoding="utf-8")
-            return stdin_stream
-        except FileNotFoundError:
-            print("File not Found!")
+            for line in read_file(self.in_file):
+                l = line.strip()
+                l_match = re.match(r"\d+:", l)
+                line_number = l_match.string[0:l_match.span()[1]].replace(":", "")
+                c_match = re.findall(r"\d\w", l)
+                c_match.pop(0)
+                elements = "".join(c_match)
+                decoded = decode(elements, "hex").decode()
+                file_result = line_number + ": " + decoded + "\n"
+                result = (line_number, decoded)
+                if line_number.isdigit():
+                    result = (int(line_number), decoded)
+                write_file(self.out_file, file_result)
+                yield result
+        except Exception as e:
+            return e
 
-    def del_if_not_empty(self, file_name):
-        try:
-            remove(file_name)
-        except FileNotFoundError:
-            print("File doesn't exist!")
-
-    def writeFile(self, content, binary=False):
-        try:
-            out_file = open(self.out_file, "a+", encoding="utf-8")
-            if not binary:
-                out_file.write(str(content))
-            else:
-                out_file = open(self.out_file, "ab", encoding="utf-8")
-                out_file.write(bytes(content))
-        except FileExistsError:
-            print("File you want to write to already exists!")
-
-    def decode(self):
-        self.del_if_not_empty(self.out_file)
-
-        for line in self.readFile():
-            l = line.strip()
-            l_match = re.match(r"\d+:", l)
-            line_number = l_match.string[0:l_match.span()[1]].replace(":", "")
-            c_match = re.findall(r"\d\w", l)
-            c_match.pop(0)
-            elements = "".join(c_match)
-            decoded = decode(elements, "hex").decode()
-            result = line_number + ": " + decoded + "\n"
-            self.writeFile(result)
-
-h = HexDecoder("Input-File.txt", "Output-File.txt")
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
