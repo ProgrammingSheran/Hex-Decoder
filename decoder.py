@@ -25,7 +25,8 @@ class HexDecoder:
         if not df:
             print(df)
         try:
-            for line in read_file(self.in_file):
+            r_file = read_file(self.in_file)
+            for line in f_file:
                 l = line.strip()
                 l_match = re.match(r"\d+:", l)
                 line_number = l_match.string[0:l_match.span()[1]].replace(":", "")
