@@ -1,19 +1,33 @@
 import re
 from codecs import decode
-from io_hex import read_file, del_file, write_file
+from io_hex import del_file, read_file, write_file, writeV_file
+from datetime import datetime
 
 class HexDecoder:
 
     '''
-    >>> h = HexDecoder("blubb.txt", "Bl.txt")
+    >>> h = HexDecoder("blubb.txt", "Bl.txt", verbose=True)
     >>> [result for result in h.decoding()]
     [(1, 'Hey how are you?'), (2, 'This is a test!'), (3, 'My Hex-Decoder = True')]
     '''
+
+    VERSION = "v0.2"
 
     def __init__(self, in_file, out_file, verbose=False):
         self.in_file = in_file
         self.out_file = out_file
         self.verbose = verbose
+
+    def verbose_info(self):
+        '''Puts info at the beginning of the file, if verbose parameter was set to True'''
+
+        if self.verbose:
+            info = "Decoded with Hex-Decoder %s\n" % self.VERSION
+            time = "Date: " + datetime.now().strftime("%d.%m.%y - %H:%M:%S") + "\n\n"
+            to_file = info + time
+            writeV_file(self.out_file, to_file)
+        else:
+            pass
 
     def decoding(self):
         '''
@@ -25,8 +39,8 @@ class HexDecoder:
         if not df:
             print(df)
         try:
-            r_file = read_file(self.in_file)
-            for line in r_file:
+            self.verbose_info()
+            for line in read_file(self.in_file):
                 l = line.strip()
                 l_match = re.match(r"\d+:", l)
                 line_number = l_match.string[0:l_match.span()[1]].replace(":", "")
@@ -43,6 +57,7 @@ class HexDecoder:
         except Exception as e:
             return e
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     import doctest
     doctest.testmod()

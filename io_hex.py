@@ -9,13 +9,13 @@ def read_file(file_name, binary=False):
     :returns: Content of the file, if error: FileNotFoundError
     '''
     try:
-        if not binary:
-            stream = open(file_name, "r")
+        stream = open(file_name, "r")
+        for l in stream:
+            yield l.strip()
+        if binary:
+            stream = open(file_name, "rb")
             for l in stream:
                 yield l.strip()
-        else:
-            stream = open(file_name, "rb")
-            return stream
     except FileNotFoundError as fnfe:
         return fnfe
 
@@ -31,6 +31,20 @@ def del_file(file_name):
     except FileNotFoundError as fnfe:
         return fnfe
 
+def writeV_file(file_name, content):
+    '''
+    Write to file if verbose parameter was set to True
+    :param file_name: Name of the file
+    :param content: Content to write to the file
+    :returns: If Error: FileExistError
+    '''
+    try:
+        out = open(file_name, "w")
+        out.write(content)
+        out.close()
+    except FileExistsError as fee:
+        return fee
+
 def write_file(file_name, content, binary=False):
     '''
     Writing to a file
@@ -40,12 +54,11 @@ def write_file(file_name, content, binary=False):
     :returns: If Error --> FileExistsError
     '''
     try:
-        if not binary:
-            out = open(file_name, "ab")
-            out.write(bytes(content, "utf-8"))
-            out.close()
-        else:
-            out = open(file_name, "a+")
+        out = open(file_name, "a")
+        out.write(content)
+        out.close()
+        if binary:
+            out = open(file_name, "a+b")
             out.write(bytes(content, "utf-8"))
             out.close()
     except FileExistsError as fee:
