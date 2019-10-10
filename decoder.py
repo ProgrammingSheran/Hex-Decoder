@@ -61,8 +61,8 @@ class HexDecoder:
 args = arg_parsing()
 h = HexDecoder(args.input, args.output, verbose=args.verbose)
 dec = h.decoding()
+print("Decoding successful!")
 for line, result in dec:
-    print("Decoding successful!")
     print(f"LINE: {line} --> {result}")
 
 '''if __name__ == '__main__':
