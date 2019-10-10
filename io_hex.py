@@ -6,7 +6,7 @@ def read_file(file_name, binary=False):
     '''
     Reads in the file to decode
     :param file_name: Name of the file
-    :param binary: If True, writes in binary mode to the file
+    :param binary: If True, reads in binary mode from the file
     :returns: Content of the file, if error: FileNotFoundError
     '''
     try:
