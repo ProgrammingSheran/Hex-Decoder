@@ -1,6 +1,6 @@
 import re
 from codecs import decode
-from io_hex import del_file, read_file, write_file, writeV_file
+from io_hex import del_file, read_file, write_file, writeV_file, file_aol, arg_parsing
 from datetime import datetime
 
 class HexDecoder:
@@ -22,9 +22,10 @@ class HexDecoder:
         '''Puts info at the beginning of the file, if verbose parameter was set to True'''
 
         if self.verbose:
-            info = "Decoded with Hex-Decoder %s\n" % self.VERSION
-            time = "Date: " + datetime.now().strftime("%d.%m.%y - %H:%M:%S") + "\n\n"
-            to_file = info + time
+            info = f"Decoded with Hex-Decoder {self.VERSION}\n"
+            time = f"Date: {datetime.now().strftime('%d.%m.%y - %H:%M:%S')}\n"
+            faol = f"Amount of lines decoded: {file_aol(self.in_file)}\n"
+            to_file = info + time + faol
             writeV_file(self.out_file, to_file)
         else:
             pass
@@ -57,7 +58,13 @@ class HexDecoder:
         except Exception as e:
             return e
 
+args = arg_parsing()
+h = HexDecoder(args.input, args.output, verbose=args.verbose)
+dec = h.decoding()
+for line, result in dec:
+    print("Decoding successful!")
+    print(f"LINE: {line} --> {result}")
 
-if __name__ == '__main__':
+'''if __name__ == '__main__':
     import doctest
-    doctest.testmod()
+    doctest.testmod()'''

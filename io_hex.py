@@ -1,5 +1,6 @@
 # IO functions for the hex decoder
 from os import remove
+from argparse import ArgumentParser
 
 def read_file(file_name, binary=False):
     '''
@@ -63,3 +64,32 @@ def write_file(file_name, content, binary=False):
             out.close()
     except FileExistsError as fee:
         return fee
+
+def file_aol(file_name):
+    '''
+    Gets the amount of lines of the file
+    :param file_name: Name of the file
+    :returns: Integer (amount of lines)
+    '''
+
+    try:
+        stream = open(file_name, "r")
+        line_amount = int(len(stream.readlines()))
+        return line_amount
+    except FileNotFoundError as fnfe:
+        return fnfe
+
+def arg_parsing():
+    '''
+    Argument parser for the command line
+    :returns: Arguments to parse, if Error --> Exception
+    '''
+    try:
+        parser = ArgumentParser()
+        parser.add_argument("-i", "--input", type=str, help="Input file with hex (.txt)")
+        parser.add_argument("-o", "--output", type=str, help="Output file decoded (.txt)")
+        parser.add_argument("-v", "--verbose", action="store_true", help="Verbosity")
+        args = parser.parse_args()
+        return args
+    except Exception as eo:
+        return eo
